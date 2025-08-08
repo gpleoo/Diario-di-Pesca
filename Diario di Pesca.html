@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diario di Pesca</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Stili personalizzati per l'applicazione */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #eaf2f8, #d4e6f1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333333;
+        }
+        .container {
+            max-width: 950px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+        h1 {
+            color: #1a5276;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+        h2 {
+            color: #2874a6;
+            border-bottom: 2px solid #d4e6f1;
+            padding-bottom: 10px;
+            margin-bottom: 20px !important;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #aeb6bf;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #4a5568;
+            transition: all 0.3s ease-in-out;
+            background-color: #f8fcfd;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5dade2;
+            box-shadow: 0 0 0 4px rgba(93, 173, 226, 0.3);
+        }
+        .btn-primary {
+            background-color: #5dade2;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(93, 173, 226, 0.3);
+        }
+        .btn-primary:hover {
+            background-color: #3498db;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #aeb6bf;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .btn-secondary:hover {
+            background-color: #85929e;
+        }
+        .catch-item {
+            background-color: #ffffff;
+            border: 1px solid #d4e6f1;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+            transition: transform 0.2s ease-in-out;
+        }
+        .catch-item:hover {
+            transform: translateY(-3px);
+        }
+        .catch-item strong {
+            color: #1a5276;
+        }
+        .catch-item span {
+            color: #4a5568;
+        }
+        .delete-btn {
+            background-color: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
+        }
+        .delete-btn:hover {
+            background-color: #dc2626;
+            transform: translateY(-1px);
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            text-align: center;
+            display: none;
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid #aeb6bf;
+        }
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            display: none;
+        }
+        .message-box h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a5276;
+        }
+        .message-box p {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin-bottom: 30px;
+        }
+        .message-box button {
+            background-color: #5dade2;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .message-box button:hover {
+            background-color: #3498db;
+        }
+        .catch-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 1.6rem;
+            z-index: 1001;
+            display: none;
+        }
+        .loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.4);
+            border-top: 5px solid #fff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stat-card {
+            background-color: #f8fcfd;
+            border: 1px solid #d4e6f1;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-card p.text-sm {
+            color: #2874a6;
+            font-weight: 500;
+        }
+        .stat-card p.text-3xl {
+            color: #1a5276;
+        }
+        .stat-card.blue-bg { background-color: #e3f2fd; }
+        .stat-card.green-bg { background-color: #e8f5e9; }
+        .stat-card.yellow-bg { background-color: #fffde7; }
+        .stat-card.red-bg { background-color: #ffebee; }
+        .stat-card.indigo-bg { background-color: #e8eaf6; }
+        .stat-card.teal-bg { background-color: #e0f2f7; }
+
+        .main-section {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        .tackle-component-group {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8fafc;
+        }
+        .tackle-component-group ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        .tackle-component-group ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .tackle-component-group ul li:last-child {
+            border-bottom: none;
+        }
+        .toggle-icon {
+            transition: transform 0.3s ease-in-out;
+            font-size: 0.8em;
+        }
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+        .section-content-visible {
+            display: block;
+        }
+        .hidden-content {
+            display: none;
+        }
+        .filter-section {
+            background-color: #f8fcfd;
+            border: 1px solid #d4e6f1;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl font-bold text-center mb-8">🌊 Diario di Pesca 🎣</h1>
+
+        <!-- Sezione Aggiungi Cattura -->
+        <div class="main-section">
+            <h2 class="text-2xl font-semibold mb-5 cursor-pointer flex justify-between items-center" data-target="addCatchContent">
+                Aggiungi Nuova Cattura <span class="toggle-icon rotated">&#9660;</span>
+            </h2>
+            <div id="addCatchContent" class="section-content-visible">
+                <!-- Modifica qui: da grid-cols-2 a flex-col per una singola colonna -->
+                <form id="catchForm" class="flex flex-col gap-6">
+                    <!-- Dati Cattura -->
+                    <div class="form-group">
+                        <label for="species">Specie:</label>
+                        <input type="text" id="species" placeholder="Es. Spigola" required list="speciesOptions">
+                        <datalist id="speciesOptions"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantità:</label>
+                        <input type="number" id="quantity" step="1" value="1" min="1" placeholder="Es. 1" required class="rounded-lg">
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Peso (grammi):</label>
+                        <input type="number" id="weight" step="1" placeholder="Es. 200 grammi" class="rounded-lg">
+                    </div>
+                    <div class="form-group">
+                        <label for="length">Lunghezza (cm):</label>
+                        <input type="number" id="length" step="0.1" placeholder="Es. 45.0" class="rounded-lg">
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Data:</label>
+                        <input type="date" id="date" required class="rounded-lg">
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Ora:</label>
+                        <input type="time" id="time" required class="rounded-lg">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Luogo:</label>
+                        <input type="text" id="location" placeholder="Es. Porto di Genova" required class="rounded-lg" list="locationOptions">
+                        <datalist id="locationOptions"></datalist>
+                    </div>
+                    <!-- Campi Attrezzatura Dettagliata -->
+                    <div class="form-group">
+                        <label for="canna">Canna:</label>
+                        <select id="canna" class="rounded-lg"><option value="">Seleziona Canna</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="piombo">Piombo:</label>
+                        <select id="piombo" class="rounded-lg"><option value="">Seleziona Piombo</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="trave">Trave:</label>
+                        <select id="trave" class="rounded-lg"><option value="">Seleziona Trave</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amo">Amo:</label>
+                        <select id="amo" class="rounded-lg"><option value="">Seleziona Amo</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="esca">Esca:</label>
+                        <select id="esca" class="rounded-lg"><option value="">Seleziona Esca</option></select>
+                    </div>
+
+                    <!-- Sezione Condizioni Meteo: ora non richiudibile -->
+                    <div class="col-span-1 main-section">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-700 flex justify-between items-center">
+                            Condizioni Meteo
+                        </h3>
+                        <!-- Modifica qui: da grid-cols-2 a grid-cols-1 per una singola colonna -->
+                        <div id="weatherContent" class="section-content-visible grid grid-cols-1 gap-6">
+                            <div class="form-group">
+                                <label for="tideHighTime">Orario Alta Marea:</label>
+                                <input type="time" id="tideHighTime" class="rounded-lg">
+                            </div>
+                            <div class="form-group">
+                                <label for="tideLowTime">Orario Bassa Marea:</label>
+                                <input type="time" id="tideLowTime" class="rounded-lg">
+                            </div>
+                            <div class="form-group">
+                                <label for="waveHeight">Altezza Onde (metri):</label>
+                                <input type="number" id="waveHeight" step="0.1" placeholder="Es. 0.5" class="rounded-lg">
+                            </div>
+                            <div class="form-group">
+                                <label for="waveFrequency">Frequenza Onde (secondi):</label>
+                                <input type="number" id="waveFrequency" step="1" placeholder="Es. 8" class="rounded-lg">
+                            </div>
+                            <div class="form-group">
+                                <label for="windDirection">Direzione Vento:</label>
+                                <select id="windDirection" class="rounded-lg">
+                                    <option value="">Seleziona</option>
+                                    <option value="N">Tramontana (N)</option>
+                                    <option value="NNE">Grecale (NNE)</option>
+                                    <option value="NE">Grecale (NE)</option>
+                                    <option value="ENE">Levante (ENE)</option>
+                                    <option value="E">Levante (E)</option>
+                                    <option value="ESE">Scirocco (ESE)</option>
+                                    <option value="SE">Scirocco (SE)</option>
+                                    <option value="SSE">Scirocco (SSE)</option>
+                                    <option value="S">Ostro (S)</option>
+                                    <option value="SSW">Libeccio (SSW)</option>
+                                    <option value="SW">Libeccio (SW)</option>
+                                    <option value="WSW">Ponente (WSW)</option>
+                                    <option value="W">Ponente (W)</option>
+                                    <option value="WNW">Maestrale (WNW)</option>
+                                    <option value="NW">Maestrale (NW)</option>
+                                    <option value="NNW">Maestrale (NNW)</option>
+                                    <option value="VAR">Variabile</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="windSpeed">Intensità Vento (nodi):</label>
+                                <input type="number" id="windSpeed" step="1" placeholder="Es. 10" class="rounded-lg">
+                            </div>
+                            <div class="form-group">
+                                <label for="atmosphericPressure">Pressione Atmosferica (hPa):</label>
+                                <input type="number" id="atmosphericPressure" step="1" placeholder="Es. 1013" class="rounded-lg">
+                            </div>
+                            <div class="form-group">
+                                <label for="temperature">Temperatura (°C):</label>
+                                <input type="number" id="temperature" step="0.1" placeholder="Es. 22.5" class="rounded-lg">
+                            </div>
+                            <div class="form-group col-span-1">
+                                <label for="weatherConditions">Condizioni del Tempo:</label>
+                                <input type="text" id="weatherConditions" placeholder="Es. Soleggiato, Cielo sereno" class="rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-span-1">
+                        <label for="catchImage">Foto della Cattura:</label>
+                        <input type="file" id="catchImage" accept="image/*" class="rounded-lg p-2 border border-gray-300">
+                    </div>
+                    <div class="form-group col-span-1">
+                        <label for="notes">Note:</label>
+                        <textarea id="notes" rows="3" placeholder="Aggiungi dettagli sulla cattura o sulle condizioni..." class="rounded-lg"></textarea>
+                    </div>
+                    <div class="col-span-1 flex justify-center mt-4">
+                        <button type="submit" class="btn-primary w-full md:w-auto" id="addCatchButton">Aggiungi Cattura</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sezione Gestisci Attrezzatura -->
+        <div class="main-section">
+            <h2 class="text-2xl font-semibold mb-5 cursor-pointer flex justify-between items-center" data-target="manageTackleContent">
+                Gestisci Attrezzatura <span class="toggle-icon rotated">&#9660;</span>
+            </h2>
+            <div id="manageTackleContent" class="section-content-visible">
+                <div class="tackle-component-group">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-700 cursor-pointer flex justify-between items-center" data-target="cannaContent">
+                        Canne <span class="toggle-icon">&#9660;</span>
+                    </h3>
+                    <div id="cannaContent" class="hidden-content">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <input type="text" id="newCannaInput" placeholder="Nuova canna (es. Canna da spinning 2.7m)" class="flex-grow p-3 border border-gray-300 rounded-lg">
+                            <button id="addCannaBtn" class="btn-secondary flex-shrink-0">Aggiungi Canna</button>
+                        </div>
+                        <ul id="cannaList" class="space-y-2"></ul>
+                    </div>
+                </div>
+                <div class="tackle-component-group">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-700 cursor-pointer flex justify-between items-center" data-target="piomboContent">
+                        Piombi <span class="toggle-icon">&#9660;</span>
+                    </h3>
+                    <div id="piomboContent" class="hidden-content">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <input type="text" id="newPiomboInput" placeholder="Nuovo piombo (es. Piombo a pera 50g)" class="flex-grow p-3 border border-gray-300 rounded-lg">
+                            <button id="addPiomboBtn" class="btn-secondary flex-shrink-0">Aggiungi Piombo</button>
+                        </div>
+                        <ul id="piomboList" class="space-y-2"></ul>
+                    </div>
+                </div>
+                <div class="tackle-component-group">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-700 cursor-pointer flex justify-between items-center" data-target="traveContent">
+                        Trave <span class="toggle-icon">&#9660;</span>
+                    </h3>
+                    <div id="traveContent" class="hidden-content">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <input type="text" id="newTraveInput" placeholder="Nuova trave (es. Fluorocarbon 0.30mm)" class="flex-grow p-3 border border-gray-300 rounded-lg">
+                            <button id="addTraveBtn" class="btn-secondary flex-shrink-0">Aggiungi Trave</button>
+                        </div>
+                        <ul id="traveList" class="space-y-2"></ul>
+                    </div>
+                </div>
+                <div class="tackle-component-group">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-700 cursor-pointer flex justify-between items-center" data-target="amoContent">
+                        Ami <span class="toggle-icon">&#9660;</span>
+                    </h3>
+                    <div id="amoContent" class="hidden-content">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <input type="text" id="newAmoInput" placeholder="Nuovo amo (es. Amo n. 6 a paletta)" class="flex-grow p-3 border border-gray-300 rounded-lg">
+                            <button id="addAmoBtn" class="btn-secondary flex-shrink-0">Aggiungi Amo</button>
+                        </div>
+                        <ul id="amoList" class="space-y-2"></ul>
+                    </div>
+                </div>
+                <div class="tackle-component-group">
+                    <h3 class="font-semibold text-lg mb-3 text-gray-700 cursor-pointer flex justify-between items-center" data-target="escaContent">
+                        Esche <span class="toggle-icon">&#9660;</span>
+                    </h3>
+                    <div id="escaContent" class="hidden-content">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <input type="text" id="newEscaInput" placeholder="Nuova esca (es. Gambero vivo)" class="flex-grow p-3 border border-gray-300 rounded-lg">
+                            <button id="addEscaBtn" class="btn-secondary flex-shrink-0">Aggiungi Esca</button>
+                        </div>
+                        <ul id="escaList" class="space-y-2"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione Filtro Statistiche per Mese -->
+        <div class="main-section">
+            <h2 class="text-2xl font-semibold mb-5 cursor-pointer flex justify-between items-center" data-target="filterStatsContent">
+                Filtra Statistiche e Catture <span class="toggle-icon rotated">&#9660;</span>
+            </h2>
+            <div id="filterStatsContent" class="section-content-visible">
+                <div class="filter-section">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="form-group">
+                            <label for="monthFilter">Seleziona Mese:</label>
+                            <input type="month" id="monthFilter" class="rounded-lg">
+                        </div>
+                        <div class="form-group">
+                            <label for="yearFilter">Seleziona Anno:</label>
+                            <select id="yearFilter" class="rounded-lg">
+                                <option value="">Tutti gli anni</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterSpecies">Filtra per Specie:</label>
+                            <input type="text" id="filterSpecies" placeholder="Es. Spigola" class="rounded-lg" list="speciesFilterOptions">
+                            <datalist id="speciesFilterOptions"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterLocation">Filtra per Luogo:</label>
+                            <input type="text" id="filterLocation" placeholder="Es. Porto di Genova" class="rounded-lg" list="locationFilterOptions">
+                            <datalist id="locationFilterOptions"></datalist>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione Statistiche -->
+        <div class="main-section">
+            <h2 class="text-2xl font-semibold mb-5 cursor-pointer flex justify-between items-center" data-target="statsContent">
+                Statistiche di Pesca 📊 <span class="toggle-icon rotated">&#9660;</span>
+            </h2>
+            <div id="statsContent" class="section-content-visible">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="statisticsContainer">
+                    <!-- Le statistiche saranno renderizzate qui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione Elenco Catture -->
+        <div class="main-section">
+            <h2 class="text-2xl font-semibold mb-5 cursor-pointer flex justify-between items-center" data-target="catchesContent">
+                Elenco Catture 🎣 <span class="toggle-icon rotated">&#9660;</span>
+            </h2>
+            <div id="catchesContent" class="section-content-visible">
+                <div id="catchesList">
+                    <!-- Le catture saranno renderizzate qui -->
+                    <p class="text-center text-gray-500 italic mt-8">Nessuna cattura registrata. Aggiungi la tua prima cattura!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale personalizzato per messaggi -->
+    <div class="message-box-overlay" id="messageBoxOverlay"></div>
+    <div class="message-box" id="messageBox">
+        <h3 id="messageBoxTitle"></h3>
+        <p id="messageBoxContent"></p>
+        <button id="messageBoxCloseBtn">OK</button>
+    </div>
+
+    <!-- Overlay di caricamento per API o operazioni lunghe -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <span>Caricamento...</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Variabili Globali e Cache DOM ---
+            const catchesKey = 'fishingCatches';
+            const tackleKey = 'fishingTackle';
+            const catchForm = document.getElementById('catchForm');
+            const catchesList = document.getElementById('catchesList');
+            const statisticsContainer = document.getElementById('statisticsContainer');
+            const speciesInput = document.getElementById('species');
+            const locationInput = document.getElementById('location');
+            const speciesDatalist = document.getElementById('speciesOptions');
+            const locationDatalist = document.getElementById('locationOptions');
+            const monthFilterInput = document.getElementById('monthFilter');
+            const yearFilterSelect = document.getElementById('yearFilter');
+            const filterSpeciesInput = document.getElementById('filterSpecies');
+            const filterLocationInput = document.getElementById('filterLocation');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            const messageBox = document.getElementById('messageBox');
+            const messageBoxOverlay = document.getElementById('messageBoxOverlay');
+            const messageBoxTitle = document.getElementById('messageBoxTitle');
+            const messageBoxContent = document.getElementById('messageBoxContent');
+            const messageBoxCloseBtn = document.getElementById('messageBoxCloseBtn');
+
+            // --- Funzioni Utili ---
+
+            /**
+             * Mostra una finestra di messaggio personalizzata.
+             * @param {string} title - Titolo del messaggio.
+             * @param {string} content - Contenuto del messaggio.
+             */
+            function showMessage(title, content) {
+                messageBoxTitle.textContent = title;
+                messageBoxContent.textContent = content;
+                messageBoxOverlay.style.display = 'block';
+                messageBox.style.display = 'block';
+            }
+
+            messageBoxCloseBtn.addEventListener('click', () => {
+                messageBox.style.display = 'none';
+                messageBoxOverlay.style.display = 'none';
+            });
+            
+            /**
+             * Mostra l'overlay di caricamento.
+             */
+            function showLoading() {
+                loadingOverlay.style.display = 'flex';
+            }
+
+            /**
+             * Nasconde l'overlay di caricamento.
+             */
+            function hideLoading() {
+                loadingOverlay.style.display = 'none';
+            }
+
+            /**
+             * Salva i dati nel localStorage.
+             * @param {string} key - La chiave di localStorage.
+             * @param {object} data - I dati da salvare.
+             */
+            function saveData(key, data) {
+                localStorage.setItem(key, JSON.stringify(data));
+            }
+
+            /**
+             * Carica i dati dal localStorage.
+             * @param {string} key - La chiave di localStorage.
+             * @returns {object} I dati caricati o un oggetto vuoto se non trovato.
+             */
+            function loadData(key) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : [];
+            }
+
+            // --- Gestione Attrezzatura (Canna, Piombo, etc.) ---
+            const tackleComponents = {
+                canna: document.getElementById('canna'),
+                piombo: document.getElementById('piombo'),
+                trave: document.getElementById('trave'),
+                amo: document.getElementById('amo'),
+                esca: document.getElementById('esca')
+            };
+
+            const tackleLists = {
+                canna: document.getElementById('cannaList'),
+                piombo: document.getElementById('piomboList'),
+                trave: document.getElementById('traveList'),
+                amo: document.getElementById('amoList'),
+                esca: document.getElementById('escaList')
+            };
+
+            const tackleInputs = {
+                canna: document.getElementById('newCannaInput'),
+                piombo: document.getElementById('newPiomboInput'),
+                trave: document.getElementById('newTraveInput'),
+                amo: document.getElementById('newAmoInput'),
+                esca: document.getElementById('newEscaInput')
+            };
+
+            const tackleButtons = {
+                canna: document.getElementById('addCannaBtn'),
+                piombo: document.getElementById('addPiomboBtn'),
+                trave: document.getElementById('addTraveBtn'),
+                amo: document.getElementById('addAmoBtn'),
+                esca: document.getElementById('addEscaBtn')
+            };
+
+            let tackleData = loadData(tackleKey);
+
+            /**
+             * Aggiunge un nuovo componente di attrezzatura.
+             * @param {string} type - Tipo di attrezzatura (canna, piombo, etc.).
+             */
+            function addTackleComponent(type) {
+                const value = tackleInputs[type].value.trim();
+                if (value && !tackleData.find(item => item.type === type && item.value === value)) {
+                    tackleData.push({ type, value });
+                    saveData(tackleKey, tackleData);
+                    renderAllTackleComponentLists();
+                    populateAllTackleSelects();
+                    tackleInputs[type].value = '';
+                }
+            }
+
+            /**
+             * Rimuove un componente di attrezzatura.
+             * @param {string} type - Tipo di attrezzatura.
+             * @param {string} value - Valore da rimuovere.
+             */
+            function removeTackleComponent(type, value) {
+                if (confirm(`Sei sicuro di voler eliminare "${value}"? Questo non modificherà le catture esistenti.`)) {
+                    tackleData = tackleData.filter(item => !(item.type === type && item.value === value));
+                    saveData(tackleKey, tackleData);
+                    renderAllTackleComponentLists();
+                    populateAllTackleSelects();
+                }
+            }
+
+            /**
+             * Rende tutte le liste di attrezzatura.
+             */
+            function renderAllTackleComponentLists() {
+                for (const type in tackleLists) {
+                    renderTackleComponentList(type);
+                }
+            }
+
+            /**
+             * Rende una singola lista di attrezzatura.
+             * @param {string} type - Tipo di attrezzatura.
+             */
+            function renderTackleComponentList(type) {
+                const list = tackleLists[type];
+                const items = tackleData.filter(item => item.type === type);
+                list.innerHTML = '';
+                if (items.length === 0) {
+                    list.innerHTML = `<li class="text-gray-500 italic">Nessun ${type} aggiunto.</li>`;
+                } else {
+                    items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors';
+                        li.innerHTML = `
+                            <span>${item.value}</span>
+                            <button class="text-red-500 hover:text-red-700 transition-colors" data-type="${item.type}" data-value="${item.value}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        `;
+                        list.appendChild(li);
+                    });
+                }
+                list.querySelectorAll('button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const type = e.currentTarget.dataset.type;
+                        const value = e.currentTarget.dataset.value;
+                        removeTackleComponent(type, value);
+                    });
+                });
+            }
+
+            /**
+             * Popola i menu a tendina dell'attrezzatura.
+             */
+            function populateAllTackleSelects() {
+                for (const type in tackleComponents) {
+                    const select = tackleComponents[type];
+                    const items = tackleData.filter(item => item.type === type);
+                    select.innerHTML = '<option value="">Seleziona</option>'; // Aggiunge l'opzione "Seleziona"
+                    items.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.value;
+                        option.textContent = item.value;
+                        select.appendChild(option);
+                    });
+                }
+            }
+            
+            // Listener per i pulsanti di aggiunta attrezzatura
+            for (const type in tackleButtons) {
+                tackleButtons[type].addEventListener('click', (e) => {
+                    e.preventDefault();
+                    addTackleComponent(type);
+                });
+            }
+            
+            // --- Gestione Catture e Statistiche ---
+            let catches = loadData(catchesKey);
+
+            /**
+             * Rende l'elenco delle catture filtrate.
+             */
+            function renderCatches() {
+                const monthFilterValue = monthFilterInput.value;
+                const yearFilterValue = yearFilterSelect.value;
+                const speciesFilterValue = filterSpeciesInput.value.toLowerCase();
+                const locationFilterValue = filterLocationInput.value.toLowerCase();
+                
+                const filteredCatches = catches.filter(c => {
+                    const catchDate = new Date(c.date);
+                    const catchYear = catchDate.getFullYear().toString();
+                    const catchMonth = `${catchDate.getFullYear()}-${String(catchDate.getMonth() + 1).padStart(2, '0')}`;
+                    
+                    const matchesMonth = monthFilterValue ? catchMonth === monthFilterValue : true;
+                    const matchesYear = yearFilterValue ? catchYear === yearFilterValue : true;
+                    const matchesSpecies = speciesFilterValue ? c.species.toLowerCase().includes(speciesFilterValue) : true;
+                    const matchesLocation = locationFilterValue ? c.location.toLowerCase().includes(locationFilterValue) : true;
+
+                    return matchesMonth && matchesYear && matchesSpecies && matchesLocation;
+                });
+                
+                catchesList.innerHTML = ''; // Pulisce la lista
+
+                if (filteredCatches.length === 0) {
+                    catchesList.innerHTML = `<p class="text-center text-gray-500 italic mt-8">Nessuna cattura trovata con i filtri selezionati.</p>`;
+                    return;
+                }
+                
+                // Ordina le catture dalla più recente alla meno recente
+                filteredCatches.sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
+
+                filteredCatches.forEach((c, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'catch-item';
+                    item.dataset.index = catches.indexOf(c); // Salva l'indice originale
+                    item.innerHTML = `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <p><strong>Specie:</strong> <span>${c.species}</span></p>
+                            <p><strong>Quantità:</strong> <span>${c.quantity}</span></p>
+                            ${c.weight ? `<p><strong>Peso Singolo:</strong> <span>${c.weight} g</span></p>` : ''}
+                            ${c.length ? `<p><strong>Lunghezza Max:</strong> <span>${c.length} cm</span></p>` : ''}
+                            <p><strong>Data:</strong> <span>${c.date}</span></p>
+                            <p><strong>Ora:</strong> <span>${c.time}</span></p>
+                            <p class="col-span-1 sm:col-span-2"><strong>Luogo:</strong> <span>${c.location}</span></p>
+                            ${c.canna ? `<p class="col-span-1 sm:col-span-2"><strong>Attrezzatura:</strong> <span>Canna: ${c.canna || 'N/D'}, Piombo: ${c.piombo || 'N/D'}, Trave: ${c.trave || 'N/D'}, Amo: ${c.amo || 'N/D'}, Esca: ${c.esca || 'N/D'}</span></p>` : ''}
+                            ${c.notes ? `<p class="col-span-1 sm:col-span-2"><strong>Note:</strong> <span>${c.notes}</span></p>` : ''}
+                        </div>
+                        ${c.image ? `<img src="${c.image}" alt="Foto della cattura di ${c.species}" class="catch-image">` : ''}
+                        <button class="delete-btn" data-index="${catches.indexOf(c)}">Elimina</button>
+                    `;
+                    catchesList.appendChild(item);
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        if (index !== undefined) {
+                            deleteCatch(parseInt(index));
+                        }
+                    });
+                });
+            }
+            
+            /**
+             * Aggiorna le statistiche in base alle catture correnti.
+             */
+            function updateStatistics() {
+                const monthFilterValue = monthFilterInput.value;
+                const yearFilterValue = yearFilterSelect.value;
+                const speciesFilterValue = filterSpeciesInput.value.toLowerCase();
+                const locationFilterValue = filterLocationInput.value.toLowerCase();
+                
+                const filteredCatches = catches.filter(c => {
+                    const catchDate = new Date(c.date);
+                    const catchYear = catchDate.getFullYear().toString();
+                    const catchMonth = `${catchDate.getFullYear()}-${String(catchDate.getMonth() + 1).padStart(2, '0')}`;
+                    
+                    const matchesMonth = monthFilterValue ? catchMonth === monthFilterValue : true;
+                    const matchesYear = yearFilterValue ? catchYear === yearFilterValue : true;
+                    const matchesSpecies = speciesFilterValue ? c.species.toLowerCase().includes(speciesFilterValue) : true;
+                    const matchesLocation = locationFilterValue ? c.location.toLowerCase().includes(locationFilterValue) : true;
+
+                    return matchesMonth && matchesYear && matchesSpecies && matchesLocation;
+                });
+                
+                const totalCatches = filteredCatches.length;
+                const totalQuantity = filteredCatches.reduce((sum, c) => sum + (c.quantity || 0), 0);
+                const speciesCount = new Set(filteredCatches.map(c => c.species)).size;
+                const locationsCount = new Set(filteredCatches.map(c => c.location)).size;
+
+                // Calcolo aggiornato: (quantità * peso) per ogni cattura
+                const totalWeight = filteredCatches.reduce((sum, c) => sum + ((c.quantity || 0) * (c.weight || 0)), 0);
+                
+                const maxWeight = filteredCatches.reduce((max, c) => Math.max(max, (c.weight || 0)), 0);
+                const maxLength = filteredCatches.reduce((max, c) => Math.max(max, (c.length || 0)), 0);
+                
+                const statistics = [
+                    { title: "Catture Totali", value: totalCatches, bg: "blue-bg", icon: "🎣" },
+                    { title: "Pesci Totali", value: totalQuantity, bg: "teal-bg", icon: "🐟" },
+                    { title: "Specie Diverse", value: speciesCount, bg: "green-bg", icon: "🐠" },
+                    { title: "Luoghi Visitati", value: locationsCount, bg: "indigo-bg", icon: "📍" },
+                    { title: "Peso Totale Registrato", value: totalWeight > 0 ? `${totalWeight} g` : 'N/D', bg: "yellow-bg", icon: "⚖️" },
+                    { title: "Cattura più Pesante", value: maxWeight > 0 ? `${maxWeight} g` : 'N/D', bg: "red-bg", icon: "🏆" },
+                    { title: "Cattura più Lunga", value: maxLength > 0 ? `${maxLength} cm` : 'N/D', bg: "blue-bg", icon: "📏" }
+                ];
+                
+                statisticsContainer.innerHTML = statistics.map(stat => `
+                    <div class="stat-card ${stat.bg}">
+                        <p class="text-sm uppercase">${stat.title}</p>
+                        <p class="text-3xl font-bold mt-2">${stat.value} <span class="text-2xl">${stat.icon}</span></p>
+                    </div>
+                `).join('');
+            }
+
+            /**
+             * Aggiunge una nuova cattura e salva i dati.
+             * @param {Event} e - L'evento di submit del form.
+             */
+            async function addCatch(e) {
+                e.preventDefault();
+                showLoading();
+
+                // Dati dal form principale
+                const species = speciesInput.value.trim();
+                const quantity = parseInt(document.getElementById('quantity').value, 10);
+                const weight = document.getElementById('weight').value ? parseInt(document.getElementById('weight').value, 10) : null;
+                const length = document.getElementById('length').value ? parseFloat(document.getElementById('length').value) : null;
+                const date = document.getElementById('date').value;
+                const time = document.getElementById('time').value;
+                const location = document.getElementById('location').value.trim();
+                const notes = document.getElementById('notes').value.trim();
+                
+                // Dati dall'attrezzatura
+                const canna = document.getElementById('canna').value;
+                const piombo = document.getElementById('piombo').value;
+                const trave = document.getElementById('trave').value;
+                const amo = document.getElementById('amo').value;
+                const esca = document.getElementById('esca').value;
+
+                // Dati meteo
+                const tideHighTime = document.getElementById('tideHighTime').value;
+                const tideLowTime = document.getElementById('tideLowTime').value;
+                const waveHeight = document.getElementById('waveHeight').value ? parseFloat(document.getElementById('waveHeight').value) : null;
+                const waveFrequency = document.getElementById('waveFrequency').value ? parseInt(document.getElementById('waveFrequency').value, 10) : null;
+                const windDirection = document.getElementById('windDirection').value;
+                const windSpeed = document.getElementById('windSpeed').value ? parseInt(document.getElementById('windSpeed').value, 10) : null;
+                const atmosphericPressure = document.getElementById('atmosphericPressure').value ? parseInt(document.getElementById('atmosphericPressure').value, 10) : null;
+                const temperature = document.getElementById('temperature').value ? parseFloat(document.getElementById('temperature').value) : null;
+                const weatherConditions = document.getElementById('weatherConditions').value.trim();
+
+                let imageDataUrl = null;
+                const imageFile = document.getElementById('catchImage').files[0];
+                if (imageFile) {
+                    try {
+                        imageDataUrl = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = error => reject(error);
+                            reader.readAsDataURL(imageFile);
+                        });
+                    } catch (error) {
+                        console.error('Errore durante la lettura dell\'immagine:', error);
+                        hideLoading();
+                        showMessage('Errore', 'Impossibile caricare l\'immagine. Riprova.');
+                        return;
+                    }
+                }
+                
+                const newCatch = {
+                    id: Date.now(),
+                    species,
+                    quantity,
+                    weight,
+                    length,
+                    date,
+                    time,
+                    location,
+                    canna,
+                    piombo,
+                    trave,
+                    amo,
+                    esca,
+                    tideHighTime,
+                    tideLowTime,
+                    waveHeight,
+                    waveFrequency,
+                    windDirection,
+                    windSpeed,
+                    atmosphericPressure,
+                    temperature,
+                    weatherConditions,
+                    notes,
+                    image: imageDataUrl
+                };
+                
+                catches.push(newCatch);
+                saveData(catchesKey, catches);
+                
+                // Aggiorna le liste e le datalist
+                renderCatches();
+                updateStatistics();
+                populateSpeciesDatalists();
+                populateLocationDatalists();
+                populateYearFilter();
+                
+                catchForm.reset();
+                autoFillCatchData();
+                hideLoading();
+                showMessage('Successo', 'Cattura aggiunta con successo!');
+            }
+            
+            /**
+             * Elimina una cattura dall'array e dal localStorage.
+             * @param {number} index - L'indice della cattura da eliminare.
+             */
+            function deleteCatch(index) {
+                // Utilizza showMessage per una conferma personalizzata
+                const confirmDelete = () => {
+                    catches.splice(index, 1);
+                    saveData(catchesKey, catches);
+                    renderCatches();
+                    updateStatistics();
+                    showMessage('Eliminato', 'Cattura eliminata con successo.');
+                };
+
+                // Funzione per mostrare la modale di conferma
+                const showConfirmBox = () => {
+                    messageBoxTitle.textContent = 'Conferma Eliminazione';
+                    messageBoxContent.textContent = 'Sei sicuro di voler eliminare questa cattura?';
+                    messageBoxCloseBtn.textContent = 'Annulla';
+                    
+                    const confirmBtn = document.createElement('button');
+                    confirmBtn.textContent = 'Elimina';
+                    confirmBtn.className = 'btn-secondary text-white bg-red-500 hover:bg-red-700 ml-4';
+                    
+                    const existingConfirmBtn = messageBox.querySelector('.btn-secondary.bg-red-500');
+                    if(existingConfirmBtn) {
+                        existingConfirmBtn.remove();
+                    }
+                    messageBox.appendChild(confirmBtn);
+
+                    messageBoxOverlay.style.display = 'block';
+                    messageBox.style.display = 'block';
+                    
+                    messageBoxCloseBtn.onclick = () => {
+                        messageBox.style.display = 'none';
+                        messageBoxOverlay.style.display = 'none';
+                        confirmBtn.remove();
+                        messageBoxCloseBtn.onclick = null;
+                        messageBoxCloseBtn.textContent = 'OK';
+                        // Re-imposta il listener originale
+                        messageBoxCloseBtn.addEventListener('click', () => {
+                            messageBox.style.display = 'none';
+                            messageBoxOverlay.style.display = 'none';
+                        }, { once: true });
+                    };
+                    
+                    confirmBtn.onclick = () => {
+                        confirmDelete();
+                        messageBox.style.display = 'none';
+                        messageBoxOverlay.style.display = 'none';
+                        confirmBtn.remove();
+                        messageBoxCloseBtn.onclick = null;
+                        messageBoxCloseBtn.textContent = 'OK';
+                        // Re-imposta il listener originale
+                        messageBoxCloseBtn.addEventListener('click', () => {
+                            messageBox.style.display = 'none';
+                            messageBoxOverlay.style.display = 'none';
+                        }, { once: true });
+                    };
+                };
+                
+                showConfirmBox();
+            }
+
+            /**
+             * Popola le datalist per le specie e i luoghi.
+             */
+            function populateSpeciesDatalists() {
+                const uniqueSpecies = [...new Set(catches.map(c => c.species))];
+                speciesDatalist.innerHTML = '';
+                document.getElementById('speciesFilterOptions').innerHTML = '';
+                uniqueSpecies.forEach(species => {
+                    speciesDatalist.innerHTML += `<option value="${species}">`;
+                    document.getElementById('speciesFilterOptions').innerHTML += `<option value="${species}">`;
+                });
+            }
+
+            function populateLocationDatalists() {
+                const uniqueLocations = [...new Set(catches.map(c => c.location))];
+                locationDatalist.innerHTML = '';
+                document.getElementById('locationFilterOptions').innerHTML = '';
+                uniqueLocations.forEach(location => {
+                    locationDatalist.innerHTML += `<option value="${location}">`;
+                    document.getElementById('locationFilterOptions').innerHTML += `<option value="${location}">`;
+                });
+            }
+
+            /**
+             * Popola il filtro per l'anno con gli anni delle catture.
+             */
+            function populateYearFilter() {
+                const uniqueYears = [...new Set(catches.map(c => new Date(c.date).getFullYear()))].sort((a, b) => b - a);
+                yearFilterSelect.innerHTML = '<option value="">Tutti gli anni</option>';
+                uniqueYears.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearFilterSelect.appendChild(option);
+                });
+            }
+            
+            /**
+             * Pre-compila data e ora con i valori correnti.
+             */
+            function autoFillCatchData() {
+                const now = new Date();
+                const date = now.toISOString().split('T')[0];
+                const time = now.toTimeString().split(' ')[0].substring(0, 5);
+                document.getElementById('date').value = date;
+                document.getElementById('time').value = time;
+            }
+
+            // --- Event Listeners ---
+            catchForm.addEventListener('submit', addCatch);
+            monthFilterInput.addEventListener('change', () => {
+                renderCatches();
+                updateStatistics();
+            });
+            yearFilterSelect.addEventListener('change', () => {
+                renderCatches();
+                updateStatistics();
+            });
+            filterSpeciesInput.addEventListener('input', () => {
+                renderCatches();
+                updateStatistics();
+            });
+            filterLocationInput.addEventListener('input', () => {
+                renderCatches();
+                updateStatistics();
+            });
+
+            // Gestore per i toggle delle sezioni
+            document.querySelectorAll('.main-section h2, .main-section h3').forEach(header => {
+                const targetId = header.dataset.target;
+                if (targetId) { // Controlla se l'elemento ha un target, per escludere la sezione meteo
+                    header.addEventListener('click', (e) => {
+                        const content = document.getElementById(targetId);
+                        const icon = e.currentTarget.querySelector('.toggle-icon');
+                        
+                        if (content) {
+                            if (content.classList.contains('section-content-visible')) {
+                                content.classList.remove('section-content-visible');
+                                content.classList.add('hidden-content');
+                                if (icon) icon.classList.remove('rotated');
+                            } else {
+                                content.classList.remove('hidden-content');
+                                content.classList.add('section-content-visible');
+                                if (icon) icon.classList.add('rotated');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Carica i dati all'avvio
+            renderCatches();
+            populateAllTackleSelects();
+            renderAllTackleComponentLists();
+            populateSpeciesDatalists();
+            populateLocationDatalists();
+            populateYearFilter();
+            updateStatistics();
+            autoFillCatchData();
+
+            // Imposta il filtro mese predefinito al mese corrente
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            monthFilterInput.value = `${year}-${month}`;
+        });
+    </script>
+</body>
+</html>
